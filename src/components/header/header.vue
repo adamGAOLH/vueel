@@ -43,9 +43,10 @@
 
 <script>
 export default {
+  // chuanzhi
   props: {
     seller: {
-      type: Object
+      type: Object // dingyizujianleixing
     }
   },
   // zujian
