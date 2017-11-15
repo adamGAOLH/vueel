@@ -15,6 +15,10 @@ Vue.use(VueRouter);
 Vue.config.productionTip = false;
 
 const routers = [{
+    path: '/',
+    redirect: '/goods'
+  },
+  {
     path: '/goods',
     component: goods
   },
