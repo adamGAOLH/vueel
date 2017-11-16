@@ -39,7 +39,7 @@ apiRouter.get('/seller',function(req,res){
   });
 });
 apiRouter.get('/goods',function(req,res){
-  res,json({
+  res.json({
     errno:0,
     data:goods
   });
