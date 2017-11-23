@@ -22,8 +22,18 @@
     </div>
   </div>
   <div class="ball-container">
-
+    <div v-for="ball in balls">
+      <transition name="drop" @before-enter="beforeEnter" @enter="enter" @after-enter="afterEnter">
+        <div v-show="ball.show" class="ball">
+          <div class="inner inner-hoke">
+          </div>
+        </div>
+      </transition>
+    </div>
   </div>
+    <div class="">
+      
+    </div>
 </div>
 </template>
 
@@ -47,25 +57,25 @@ export default {
   },
   data() {
     return {
-      balls: [
-        {
-          show:false
+      balls: [{
+          show: false
         },
         {
-          show:false
+          show: false
         },
         {
-          show:false
+          show: false
         },
         {
-          show:false
+          show: false
         },
         {
-          show:false
+          show: false
         }
-      ]
-    }
-  }
+      ],
+      dropBalls: []
+    };
+  },
   computed: {
     totalPrice() {
       let total = 0;
@@ -96,6 +106,57 @@ export default {
         return 'not-enough';
       } else {
         return 'enough';
+      }
+    }
+  },
+  methods: {
+    drop(el) {
+      for (let i = 0; i < this.balls.length; i++) {
+        let ball = this.ball[i];
+        if (!ball.show) {
+          ball.show = true;
+          ball.el = el;
+          this.dropBalls.push(ball);
+          return;
+        }
+      }
+    },
+    // 小球动画 vue 钩子
+    beforeEnter: function(el) {
+      let count = this.balls.length;
+      while (count--) {
+        let ball = this.balls[count];
+        if (ball.show) {
+          // Element.getBoundingClientRect()方法返回元素的大小及其相对于视口的位置。
+          let rect = ball.el.getBoundingClientRect();
+          let x = rect.left - 32;
+          let y = -(window.innerHeight - rect.top - 22);
+          el.style.display = '';
+          el.style.webkitTransform = `translate3d(0,${y}px,0)`;
+          el.style.transform = `translate3d(0,${y}px,0)`;
+          let inner = el.getElementsByClassName('inner-hoke')[0];
+          inner.style.webkitTransform = `translate3d(0,${x}px,0)`;
+          inner.style.transform = `translate3d(0,${x}px,0)`;
+        }
+      }
+    },
+    enter: function(el, done) {
+      /* eslint-disable no-unused-vars */
+      // 申明rf是为了触发浏览器的重排,上面那个是防止报错，因为ES6语言规范会让被申明却未被调用的变量报错
+      let rf = el.offsetHeight;
+      this.nextTick(() => {
+        el.style.webkitTransform = 'translate3d(0,0,0)';
+        el.style.transform = 'translate3d(0,0,0)';
+        let inner = el.getElementsByClassName('inner-hoke')[0];
+        inner.style.webkitTransform = 'translate3d(0,0,0)';
+        inner.style.transform = 'translate3d(0,0,0)';
+      });
+    },
+    afterEnter: function(el) {
+      let ball = this.dropBalls.shift();
+      if (ball) {
+        ball.show = false;
+        el.style.display = 'none';
       }
     }
   }
@@ -187,6 +248,21 @@ export default {
           &.enough
             background:#00b43c
             color:#fff
+    .ball-container
+      .ball
+        position:fixed
+        left:32px
+        bottom:22px
+        z-index:200
+        transition:all 0.4s cubic-bezier(0.49,-0.29,-0.75,0.41)
+        /* cubic-bezie(x,x,x,x)是动画抛出曲线*/
+        .inner
+          width:16px
+          height:16px
+          border-radius:50%
+          background:rgb(0,160,220)
+          transition:all 0.4s linear
+
 
 
 </style>

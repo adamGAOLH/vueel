@@ -34,6 +34,8 @@ export default {
       } else {
         this.food.count++;
       };
+      // 想上传递参数$emit
+      this.$emit('add', event.target);
     },
     decreaseCount(event) {
       // pc 防止二次点击
