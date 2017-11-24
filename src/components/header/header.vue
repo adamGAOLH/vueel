@@ -223,8 +223,8 @@ export default {
       background:rgba(7,17,27,0.8)
       /*此属性只在ios上好使，模糊效果*/
       backdrop-filter:blur(10px)
-      &.fade-enter-active, .fade-leave-active
-        transition: all 1s
+      &.fade-enter-active, &.fade-leave-active
+        transition: all 0.4s
       &.fade-enter, &.fade-leave-active
         opacity:0
         background:rgba(7,17,27,0.8)
