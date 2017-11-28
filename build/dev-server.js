@@ -11,9 +11,9 @@ const path = require('path')
 const express = require('express')
 const webpack = require('webpack')
 const proxyMiddleware = require('http-proxy-middleware') //  代理转发需要的api
-const webpackConfig = (process.env.NODE_ENV === 'testing' || process.env.NODE_ENV === 'production')
-  ? require('./webpack.prod.conf')
-  : require('./webpack.dev.conf')
+const webpackConfig = (process.env.NODE_ENV === 'testing' || process.env.NODE_ENV === 'production') ?
+  require('./webpack.prod.conf') :
+  require('./webpack.dev.conf')
 
 // default port where dev server listens for incoming traffic定义端口号
 const port = process.env.PORT || config.dev.port
@@ -32,26 +32,26 @@ const ratings = appData.ratings;
 // 编写路由
 const apiRouter = express.Router();
 // 写接口
-apiRouter.get('/seller',function(req,res){
+apiRouter.get('/seller', function(req, res) {
   res.json({
-    errno:0, // 定义规范 正常
-    data:seller
+    errno: 0, // 定义规范 正常
+    data: seller
   });
 });
-apiRouter.get('/goods',function(req,res){
+apiRouter.get('/goods', function(req, res) {
   res.json({
-    errno:0,
-    data:goods
+    errno: 0,
+    data: goods
   });
 });
-apiRouter.get('/ratings',function(req,res){
+apiRouter.get('/ratings', function(req, res) {
   res.json({
-    erron:0,
-    data:ratings
+    errno: 0,
+    data: ratings
   });
 });
 
-app.use('/api',apiRouter);
+app.use('/api', apiRouter);
 const compiler = webpack(webpackConfig)
 
 const devMiddleware = require('webpack-dev-middleware')(compiler, {
@@ -78,10 +78,12 @@ const hotMiddleware = require('webpack-hot-middleware')(compiler, {
 app.use(hotMiddleware)
 
 // proxy api requests
-Object.keys(proxyTable).forEach(function (context) {
+Object.keys(proxyTable).forEach(function(context) {
   let options = proxyTable[context]
   if (typeof options === 'string') {
-    options = { target: options }
+    options = {
+      target: options
+    }
   }
   app.use(proxyMiddleware(options.filter || context, options))
 })

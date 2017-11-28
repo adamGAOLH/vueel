@@ -34,7 +34,27 @@
       <splite v-show="food.info"></splite>
       <div class="rating">
         <h1 contenteditable="title">商品评价</h1>
-        <ratingselect :select-type="selectType" :only-content="onlyContent" :desc="desc" :ratings="food.ratings"></ratingselect>
+        <ratingselect @select="selectRating" @toggle="toggleContent" :select-type="selectType" :only-content="onlyContent" :desc="desc" :ratings="food.ratings"></ratingselect>
+        <div class="rating-wrapper">
+          <ul v-show="food.ratings && food.ratings.length">
+            <li v-show="needShow(rating.rateType,rating.text)" v-for="rating in food.ratings" class="rating-item border-1px">
+              <div class="user">
+                <span class="name">{{rating.username}}</span>
+                <img :src="rating.avatar" alt="" class="avatar" width="12" height="12">
+              </div>
+              <div class="time">
+                {{rating.rateTime | formDate}}
+              </div>
+              <p class="text">
+                <span :class="{'icon-thumb_up':rating.rateType===0}"></span>
+                <span :class="{'icon-thumb_down':rating.rateType===1}"></span> {{rating.text}}
+              </p>
+            </li>
+          </ul>
+          <div class="no-ratings" v-show="!food.ratings || !food.ratings.length">
+            暂无评价
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -46,9 +66,8 @@ import BScroll from 'better-scroll';
 import cartcontrol from '../../components/cartcont/cartcont';
 import splite from '../../components/splite/splite';
 import ratingselect from '../../components/ratingselect/ratingselect';
+import {formDate} from '../../common/js/date';
 import Vue from 'vue';
-// const POSITIVE = 0;
-// const NEGATIVE = 1;
 const ALL = 2;
 export default {
   props: {
@@ -99,6 +118,35 @@ export default {
     addFood(target) {
       // 想上传递参数$emit
       this.$emit('add', event.target);
+    },
+    needShow(type, text) {
+      if (this.onlyContent && !text) {
+        return false;
+      }
+      if (this.selectType === ALL) {
+        return true;
+      } else {
+        return type === this.selectType;
+      }
+    },
+    selectRating(type) {
+      this.selectType = type;
+      this.$nextTick(() => {
+        this.scroll.refresh();
+      });
+    },
+    toggleContent(onlyContent) {
+      this.onlyContent = !this.onlyContent;
+      this.$nextTick(() => {
+        // 从新计算。确保滚动正常效果
+        this.scroll.refresh();
+      });
+    }
+  },
+  filters: {
+    formDate(time) {
+      let date = new Date(time);
+      return formDate(date, 'yyyy-MM-dd hh:mm');
     }
   },
   components: {
@@ -110,6 +158,7 @@ export default {
 </script>
 
 <style lang="stylus" rel='stylesheet/stylus'>
+  @import '../../common/stylus/mixin'
   .food
     position:fixed
     left:0
@@ -214,6 +263,49 @@ export default {
         margin-left:18px
         font-size:14px
         color:rgb(7,17,27)
+      .rating-wrapper
+        padding:0 18px
+        .rating-item
+          padding:16px 0
+          border-1px(rgba(7,17,27,0.1))
+          position:relative
+          .user
+            position:absolute
+            right:0
+            top:16px
+            line-height:12px
+            font-size:0
+            .name
+              font-size:10px
+              margin-right:6px
+              display:inline-block
+              vertical-align:top
+              color:rgb(147,153,159)
+            .avatar
+              border-radius:50%
+          .time
+            margin-bottom:6px
+            line-height:12px
+            font-size:10px
+            color:rgb(147,153,159)
+          .text
+            line-height:16px
+            font-size:12px
+            color:rgb(7,17,27)
+            .icon-thumb_up, .icon-thumb_down
+              margin-right:4px
+              line-height:12px
+              font-size:12px
+            .icon-thumb_up
+              color:rgb(0,160,220)
+            .icon-thumb_down
+              color:rgb(147,153,159)
+        .no-ratings
+          padding:16px 0
+          font-size:12px
+          color:rgb(147,153,159)
+
+
 
 
 

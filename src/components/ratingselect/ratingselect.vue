@@ -1,11 +1,11 @@
 <template lang="html">
   <div class="ratingselect">
     <div class="rating-type border-1px">
-      <span class="block positive" :class="{'active':selectType===2}" @click="select(2,$event)">{{desc.all}}<span class="count">47</span></span>
-      <span class="block positive" :class="{'active':selectType===0}">{{desc.positive}}<span class="count">50</span></span>
-      <span class="block negative" :class="{'active':selectType===1}">{{desc.negative}}<span class="count">44</span></span>
+      <span class="block positive" :class="{'active':selectType===2}" @click="select(2,$event)">{{desc.all}}<span class="count">{{ratings.length}}</span></span>
+      <span class="block positive" :class="{'active':selectType===0}"  @click="select(0,$event)">{{desc.positive}}<span class="count">{{positive.length}}</span></span>
+      <span class="block negative" :class="{'active':selectType===1}"  @click="select(1,$event)">{{desc.negative}}<span class="count">{{negative.length}}</span></span>
     </div>
-    <div class="switch" :class="{'on':onlyContent}">
+    <div class="switch" :class="{'on':onlyContent}" @click="toggleContent">
       <span class="icon-check_circle" ></span>
       <span class="text">只看有内容的评价</span>
     </div>
@@ -13,37 +13,64 @@
 </template>
 
 <script>
-  // const POSITIVE = 0;
-  // const NEGATIVE = 1;
-  const ALL = 2;
-  export default {
-    props: {
-      ratings: {
-        type: Array,
-        default () {
-          return [];
-        }
-      },
-      selectType: {
-        type: Number,
-        default: ALL
-      },
-      onlyContent: {
-        type: Boolean,
-        default: false
-      },
-      desc: {
-        type: Object,
-        default () {
-          return {
-            all: '全部',
-            positive: '满意',
-            negative: '不满意'
-          };
-        }
+const POSITIVE = 0;
+const NEGATIVE = 1;
+const ALL = 2;
+export default {
+  props: {
+    ratings: {
+      type: Array,
+      default () {
+        return [];
+      }
+    },
+    selectType: {
+      type: Number,
+      default: ALL
+    },
+    onlyContent: {
+      type: Boolean,
+      default: false
+    },
+    desc: {
+      type: Object,
+      default () {
+        return {
+          all: '全部',
+          positive: '满意',
+          negative: '不满意'
+        };
       }
     }
-  };
+  },
+  methods: {
+    select(type, event) {
+      if (!event._constructed) {
+        return;
+      }
+      // 触发自定义函数； this.emit(‘increment1’,”这个位子是可以加参数的”)；
+      this.$emit('select', type);
+    },
+    toggleContent(event) {
+      if (!event._constructed) {
+        return;
+      }
+      this.$emit('toggle');
+    }
+  },
+  computed: {
+    positive() {
+      return this.ratings.filter((rating) => {
+        return rating.rateType === POSITIVE;
+      });
+    },
+    negative() {
+      return this.ratings.filter((rating) => {
+        return rating.rateType === NEGATIVE;
+      });
+    }
+  }
+};
 </script>
 
 <style lang="stylus" rel='stylesheet/stylus'>
