@@ -12,25 +12,37 @@
       <router-link to="/seller">商家</router-link>
     </div>
   </div>
-  <router-view :seller="seller"/>
+  <!--keep-alive可保持vue生命周期只走一次 保存当前状态 -->
+  <keep-alive>
+    <router-view :seller="seller" />
+  </keep-alive>
 </div>
 </template>
 
 <script type="text/ecmascript-6">
 import header from './components/header/header.vue';
-
+import {
+  urlParse
+} from './common/js/util';
 const ERR_OK = 0;
 export default {
   data() {
     return {
-      seller: {}
+      seller: {
+        // 立即执行函数
+        id: (() => {
+          let queryParam = urlParse();
+          return queryParam.id;
+        })()
+      }
     };
   },
   created() {
-    this.$http.get('/api/seller').then((response) => {
+    this.$http.get('/api/seller?id=' + this.seller.id).then((response) => {
       response = response.body;
       if (response.errno === ERR_OK) {
-        this.seller = response.data;
+        // es6语法:assign(a,b,c)a为返回参数最终结果,
+        this.seller = Object.assign({}, this.seller, response.data);
       }
     });
   },
